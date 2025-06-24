@@ -1,0 +1,113 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API fotos de raposa</title>
+  <style>
+    body {
+      background: linear-gradient(20deg, rgb(33, 66, 99), rgb(0, 99, 99), rgb(22, 122, 66));
+      min-height: 100vh;
+    }
+    .flex {
+      display: flex;
+    }
+    .row {
+      flex-flow: row wrap;
+    }
+    .column {
+      flex-flow: column wrap;
+    }
+    .gap {
+      gap: .5rem;
+    }
+    .going-center {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    input {
+      outline: none;
+      padding: .5rem;
+      background: mediumseagreen;
+      color: blue;
+      border: darkslategray solid 1px;
+    }
+    img {
+      height: 17rem;
+      width: 17rem;
+      border-radius: 50%;
+      box-shadow: 0 0 .5rem rgb(99, 122, 144);
+      margin: 1rem 0;
+    }
+    .vanished {
+      display: none;
+    }
+    #mock {
+      color: #ff9;
+      font-size: 1.5rem;
+      text-shadow: 0 0 .5rem purple;
+    }
+  </style>
+</head>
+<body>
+  <div class="flex column going-center">
+    <h2>Boas vindas à API de fotos de 🦊 🍂</h2>
+    <h4>API com mais de 100 fotos de raposas para o seu entretenimento</h4>
+    <h5>Digite o id corresponde, de 1 até onde for possível (é o 124, viu?)</h5>
+    <div class="flex row going-center gap">
+      <input id="input-for-fox" type="number" placeholder="digite id de uma imagem">
+      <button id="see-fox">ver 🦊</button>
+    </div>
+    <p id="mock" class="vanished">tu vai pra onde com esse número ✋🏼? pode ir dando meia volta 😎</p>
+    <p id="response-tag"></p>
+    <div id="box-for-fox">
+      <img id="current-fox" src="" alt="">
+    </div>
+  </div>
+
+  <script>
+    const getById = (id) => {return document.getElementById(id)}
+    
+    const btnSeeFox = getById('see-fox')
+
+    const imgDomain = 'https://randomfox.ca/'
+    const queryDomain = 'https://randomfox.ca?id='
+
+    btnSeeFox.addEventListener('click', seeFoxes)
+
+    if (getById('current-fox').getAttribute('src') === '') {
+      getById('current-fox').classList.add('vanished')
+    }
+
+    async function seeFoxes() {
+      let query = queryDomain + getById('input-for-fox').value
+      const response = await fetch(query)
+      try {
+        if(!response.ok) throw new Error(getById('response-tag').textContent = 'Erro no processamento da resposta')
+        const foxImg = imgDomain + `./images/${getById('input-for-fox').value}.jpg`
+        getById('current-fox').classList.remove('vanished')
+        getById('current-fox').setAttribute('src', foxImg)
+        getById('current-fox').setAttribute('alt', 'uma raposa feliz')
+        console.log(getById('current-fox').getAttribute('src'))
+      } catch(err) {
+        getById('response-tag').textContent = 'Erro ao exibir a raposa'
+      }
+    }
+
+    setInterval(() => {
+      if (getById('input-for-fox').value === '' || parseInt(getById('input-for-fox').value) < 1 || parseInt(getById('input-for-fox').value) > 124) {
+        getById('see-fox').classList.add('vanished')
+        if(getById('input-for-fox').value !== '') getById('mock').classList.remove('vanished')
+        else getById('mock').classList.add('vanished')
+      } 
+      if (getById('input-for-fox').value !== '' && parseInt(getById('input-for-fox').value) >= 1 && parseInt(getById('input-for-fox').value) <= 124) {
+        getById('see-fox').classList.remove('vanished')
+        getById('mock').classList.add('vanished')
+      }
+    }, 100)
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Placeholder</title>
+  <style>
+    body {
+      background: linear-gradient(20deg, rgb(10, 20, 30), rgb(10, 99, 99), rgb(10, 66, 99));
+      min-height: 100vh;
+    }
+    .flex {
+      display: flex;
+    }
+    .row {
+      flex-flow: row wrap;
+    }
+    .column {
+      flex-flow: column wrap;
+    }
+    .gap {
+      gap: .5rem;
+    }
+    .going-center {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .going-left {
+      align-items: flex-start;
+      justify-content: flex-start;
+      text-align: left;
+    }
+    input {
+      outline: none;
+      padding: .5rem;
+      background: #ff9;
+      border: #222 solid 1px;
+    }
+    .vanished {
+      display: none;
+    }
+    span {
+      font-size: 1.7rem;
+    }
+    li {
+      margin: .2rem;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin: .3rem;
+    }
+    #query-for-todo {
+      margin: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>API JSON placeholder</h2>
+  <h6>API p/ treinar requisições mock: <i>get, post, put, patch, delete</i></h6>
+
+  <div id="query-for-todo" class="flex column going-center gap">
+    <h4>Consulte um afazer</h4>
+    <input type="number" id="input-for-query" placeholder="digite um valor numérico">
+    <button id="btn-for-todo-request">consultar afazer</button>
+    <div id="todo-skin">
+      <p id="todo-title"></p>
+      <p id="todo-status"></p>
+    </div>
+  </div>
+  
+  <div id="todo-post-form">
+    <div class="flex column going-center gap">
+      <h3>Registre um afazer</h3>
+      <input type="number" id="input-user-id" placeholder="seu id">
+      <input type="text" id="input-for-new-todo" placeholder="novo afazer">
+      <input type="text" id="input-for-new-todo-status" placeholder="status do afazer">
+      <button id="btn-for-post-request">registrar afazer</button>
+      <p id="todo-req-code"></p>
+      <div id="view" class="flex column going-left"></div>
+    </div>
+  </div>
+  
+  <script>
+    const getById = (id) => {return document.getElementById(id)}
+    
+    const btnForTodoRequest = getById('btn-for-todo-request')
+    const btnForPostRequest = getById('btn-for-post-request')
+    const inputForQuery = getById('input-for-query')
+    const inputForNewTodo = getById('input-for-new-todo')
+
+    btnForTodoRequest.addEventListener('click', seeTodos)
+    btnForPostRequest.addEventListener('click', createTodo)
+
+    async function seeTodos() {
+      fetch(`https://jsonplaceholder.typicode.com/todos/${inputForQuery.value}`)
+      .then(response => response.json())
+      .then(json => {
+        getById('todo-title').innerHTML = '<span>👉🏽</span> ' + json.title
+        getById('todo-status').innerHTML = json.completed ? '<span>✔️</span> completado' : '<span>❗</span> pendente'
+      })
+    }
+
+    async function createTodo() {
+      fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: 'Registro de novo Afazer',
+          body: getById('input-for-new-todo').value,
+          userId: getById('input-user-id').value,
+          completed: getById('input-for-new-todo-status').value !== ''
+          ? true
+          : false
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          getById('todo-req-code').innerHTML = `Resposta do servidor com código: ${response.status}`
+        }
+        return response.json()
+      })
+      .then(json => {
+        console.log('Post criado:', json)
+        getById('view').innerHTML = `
+        <h4>${json.title}</h4>
+        <ul>
+          <li>${json.body}</li>
+          <li>${json.completed ? '<span>✔️</span> completado' : '<span>❗</span> pendente'}</li>
+        </ul>`
+      })
+    }
+    
+  </script>
+</body>
+</html>
